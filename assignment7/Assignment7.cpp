@@ -5,8 +5,9 @@ std::shared_ptr<Camera> Assignment7::CreateCamera() const
 {
     const glm::vec2 resolution = GetImageOutputResolution();
     std::shared_ptr<Camera> camera = std::make_shared<PerspectiveCamera>(resolution.x / resolution.y, 26.6f);
-    camera->SetPosition(glm::vec3(0.f, -4.1469f, 0.73693f));
-    camera->Rotate(glm::vec3(1.f, 0.f, 0.f), PI / 2.f);
+    camera->SetPosition(glm::vec3(6.916f, 9.34f, 10.649f));
+    camera->Rotate(glm::vec3(1.f, 0.f, 0.f), -0.6342f);
+    camera->Rotate(glm::vec3(0.f, 1.f, 0.f), 0.5760f);
     return camera;
 }
 
@@ -25,11 +26,11 @@ std::shared_ptr<Scene> Assignment7::CreateScene() const
     std::shared_ptr<BlinnPhongMaterial> cubeMaterial = std::make_shared<BlinnPhongMaterial>();
     cubeMaterial->SetDiffuse(glm::vec3(1.f, 1.f, 1.f));
     cubeMaterial->SetSpecular(glm::vec3(0.6f, 0.6f, 0.6f), 40.f);
-    cubeMaterial->SetReflectivity(0.3f);
+    cubeMaterial->SetReflectivity(0.0f);
 
     // Objects
     std::vector<std::shared_ptr<aiMaterial>> loadedMaterials;
-    std::vector<std::shared_ptr<MeshObject>> cubeObjects = MeshLoader::LoadMesh("CornellBox/CornellBox-Assignment7-Alt.obj", &loadedMaterials);
+    std::vector<std::shared_ptr<MeshObject>> cubeObjects = MeshLoader::LoadMesh("three.obj", &loadedMaterials);
     for (size_t i = 0; i < cubeObjects.size(); ++i) {
         std::shared_ptr<Material> materialCopy = cubeMaterial->Clone();
         materialCopy->LoadMaterialFromAssimp(loadedMaterials[i]);
@@ -37,7 +38,7 @@ std::shared_ptr<Scene> Assignment7::CreateScene() const
 
         std::shared_ptr<SceneObject> cubeSceneObject = std::make_shared<SceneObject>();
         cubeSceneObject->AddMeshObject(cubeObjects[i]);
-        cubeSceneObject->Rotate(glm::vec3(1.f, 0.f, 0.f), PI / 2.f);
+//        cubeSceneObject->Rotate(glm::vec3(1.f, 0.f, 0.f), PI / 2.f);
 
         cubeSceneObject->CreateAccelerationData(AccelerationTypes::BVH);
         cubeSceneObject->ConfigureAccelerationStructure([](AccelerationStructure* genericAccelerator) {
@@ -55,8 +56,9 @@ std::shared_ptr<Scene> Assignment7::CreateScene() const
     }
 
     // Lights
-    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>();
-    pointLight->SetPosition(glm::vec3(0.01909f, 0.0101f, 1.97028f));
+//    std::shared_ptr<Light> pointLight = std::make_shared<PointLight>();
+    std::shared_ptr<Light> pointLight = std::make_shared<AreaLight>(glm::vec2(1.f, 1.f));
+    pointLight->SetPosition(glm::vec3(5.f, 5.f, 5.f));
     pointLight->SetLightColor(glm::vec3(1.f, 1.f, 1.f));
 
 #if ACCELERATION_TYPE == 0
@@ -88,7 +90,7 @@ std::shared_ptr<class Renderer> Assignment7::CreateRenderer(std::shared_ptr<Scen
 
 int Assignment7::GetSamplesPerPixel() const
 {
-    return 1;
+    return 2;
 }
 
 bool Assignment7::NotifyNewPixelSample(glm::vec3 inputSampleColor, int sampleIndex)
